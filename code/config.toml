@@ -1,0 +1,17 @@
+[paper_sizes]
+A5 = [148, 210]
+A4 = [210, 297]
+A3 = [297, 420]
+A2 = [420, 594]
+
+[page]
+bleed = [5,5]       # % bleed on x and y
+pixels_per_mm = 10   # pixels per mm
+landscape = false   # landscape or portrait
+
+[colours]
+stroke = 'black'
+fill = 'none'
+background = 'none'
+
+
