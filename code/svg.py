@@ -42,8 +42,6 @@ def svg_header(paper_size, drawable_area):
     Returns:
       str: An SVG header string with the specified paper and canvas sizes.
     """
-    # paper_size = set_image_size(paper_size, ppmm)
-
     xml1 = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>"""
     xml2 = """<svg width="{}" height="{}" viewBox="{} {} {} {}" """.format(
         paper_size[0], paper_size[1], drawable_area[0],
@@ -68,4 +66,3 @@ def generate_filename():
     timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     name = sys.argv[0].split(".py")[0]
     return "{}_{}.svg".format(name, timestamp)
-
