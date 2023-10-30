@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import datetime
-import sys
-# import toml
-
-
-# svg functions ###
 
 
 def set_image_size(paper_size, ppmm, landscape=True):
@@ -52,17 +46,3 @@ def svg_header(paper_size, drawable_area):
 
 def svg_footer():
     return "</svg>"
-
-
-# file functions ###
-
-def generate_filename():
-    """Generates a filename for the SVG file based on the name of the script,
-    the current date, and the current time.
-
-    Returns:
-      str: The filename in the format "<name of script>_<date>_<time>.svg".
-    """
-    timestamp = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
-    name = sys.argv[0].split(".py")[0]
-    return "{}_{}.svg".format(name, timestamp)

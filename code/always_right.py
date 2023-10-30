@@ -1,11 +1,12 @@
-import math
+# Description: Draw a line that fits in the drawable area,
 import random
-import svg
 import toml
 
+# local libraries
+import svg
+import draw
+import utils
 
-"""Skeleton for svg creation
-"""
 
 # Load config file
 config = toml.load('config.toml')
@@ -15,6 +16,8 @@ A4 = config['paper_sizes']['A4']
 A3 = config['paper_sizes']['A3']
 ppmm = config['page']['pixels_per_mm']
 bleed = config['page']['bleed']
+
+out_dir = config['directories']['output']
 
 # Stroke and fill colours
 STROKE_COLOUR = config['colours']['stroke']
@@ -35,25 +38,6 @@ quantize_step = ppmm * 10
 
 
 # Functions
-"""Put local functions here"""
-
-
-def draw_line(coordinates, color, width):
-    """Draw a line from coordinates[0], coordinates[1] to coordinates[2],
-    coordinates[3]
-    """
-    svg_line = (
-        f'<line x1="{coordinates[0]}" y1="{coordinates[1]}" '
-        f'x2="{coordinates[2]}" y2="{coordinates[3]}" '
-        f'stroke="{color}" stroke-width="{width}" />\n'
-    )
-    return svg_line
-
-
-def quantize(value, step):
-    """Quantize value to the nearest step
-    """
-    return int(math.floor(value / step) * step)+step
 
 
 def always_right(drawable_area, iterations):
@@ -86,15 +70,18 @@ def always_right(drawable_area, iterations):
             y = y2
     lines = [
         [
-            quantize(x, quantize_step),
-            quantize(y, quantize_step),
-            quantize(x2, quantize_step),
-            quantize(y2, quantize_step)
+            (utils.quantize(x, quantize_step),
+             utils.quantize(y, quantize_step)),
+            (utils.quantize(x2, quantize_step),
+             utils.quantize(y2, quantize_step))
         ]
         for x, y, x2, y2 in lines
     ]
     return lines
 
+
+# create the output directory if it doesn't exist
+utils.create_dir(out_dir)
 
 # Set up the SVG header
 paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
@@ -104,7 +91,8 @@ print("drawable_area: {}".format(drawable_area))
 
 svg_header = svg.svg_header(paper_size, drawable_area)
 svg_footer = svg.svg_footer()
-filename = svg.generate_filename()
+
+filename = out_dir + utils.generate_filename()
 
 # print paper_size
 print("paper_size: {}".format(paper_size))
@@ -124,7 +112,10 @@ drawable_area = (
 
 lines = always_right(drawable_area, iterations)
 for line in lines:
-    svg_list.append(draw_line(line, STROKE_COLOUR, STROKE_WIDTH))
+    print("line: {}".format(line))
+    print("line[:1]: {}".format(line[:2]))
+    print("line[1:]: {}".format(line[2:]))
+    svg_list.append(draw.line(line[0], line[1], STROKE_WIDTH, STROKE_COLOUR))
 svg_list.append(svg_footer)
 
 # Write the SVG file
