@@ -87,11 +87,6 @@ utils.create_dir(out_dir)
 paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
 drawable_area = svg.set_drawable_area(paper_size, bleed)
 
-print("drawable_area: {}".format(drawable_area))
-
-svg_header = svg.svg_header(paper_size, drawable_area)
-svg_footer = svg.svg_footer()
-
 filename = out_dir + utils.generate_filename()
 
 # print paper_size
@@ -99,9 +94,9 @@ print("paper_size: {}".format(paper_size))
 print("drawable_area: {}".format(drawable_area))
 print("filename: {}".format(filename))
 
-# Write the SVG file
+# create the SVG file
 svg_list = []
-svg_list.append(svg_header)
+svg_list.append(svg.svg_header(paper_size, drawable_area))
 # reduce drawable area by quantize_step so the lines comfortably fit
 drawable_area = (
     drawable_area[0] + quantize_step*2,
@@ -112,13 +107,7 @@ drawable_area = (
 
 lines = always_right(drawable_area, iterations)
 for line in lines:
-    print("line: {}".format(line))
-    print("line[:1]: {}".format(line[:2]))
-    print("line[1:]: {}".format(line[2:]))
     svg_list.append(draw.line(line[0], line[1], STROKE_WIDTH, STROKE_COLOUR))
-svg_list.append(svg_footer)
+svg_list.append(svg.svg_footer())
 
-# Write the SVG file
-svg_file = open(filename, 'w')
-svg_file.writelines(svg_list)
-svg_file.close()
+svg.write_file(filename, svg_list)
