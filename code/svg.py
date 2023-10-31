@@ -46,3 +46,10 @@ def svg_header(paper_size, drawable_area):
 
 def svg_footer():
     return "</svg>"
+
+
+def write_file(filename, svg_list):
+    """ Write the SVG file """
+    with open(filename, "w") as svg_file:
+        for line in svg_list:
+            svg_file.write(line + "\n")

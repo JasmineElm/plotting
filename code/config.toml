@@ -14,6 +14,9 @@ stroke = 'black'
 fill = 'none'
 background = 'none'
 
+[stroke]
+width = 1
+
 [directories]
 output = '../output/'
 
