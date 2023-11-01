@@ -24,6 +24,17 @@ def set_drawable_area(paper_size, bleed_xy):
     return (min_x, min_y, max_x, max_y)
 
 
+def is_in_drawable_area(xy1, xy2, drawable_area):
+    """ return True if both points are in drawable_area """
+    if xy1[0] < drawable_area[0] or xy1[0] > drawable_area[2] or \
+       xy1[1] < drawable_area[1] or xy1[1] > drawable_area[3] or \
+       xy2[0] < drawable_area[0] or xy2[0] > drawable_area[2] or \
+       xy2[1] < drawable_area[1] or xy2[1] > drawable_area[3]:
+        return False
+    else:
+        return True
+
+
 def svg_header(paper_size, drawable_area):
     """
     Returns an SVG header string with the specified paper and canvas sizes.
@@ -46,6 +57,22 @@ def svg_header(paper_size, drawable_area):
 
 def svg_footer():
     return "</svg>"
+
+
+def svg_list_to_string(svg_list):
+    """ convert a list of SVG lines to a string """
+    return "\n".join(svg_list)
+
+
+def build_svg_file(paper_size, drawable_area, svg_list):
+    """ build the SVG file from the following parts:
+        header
+        svg_list
+        footer
+    """
+    svg_list.insert(0, svg_header(paper_size, drawable_area))
+    svg_list.append(svg_footer())
+    return svg_list
 
 
 def write_file(filename, svg_list):
