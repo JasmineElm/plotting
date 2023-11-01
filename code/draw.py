@@ -23,7 +23,6 @@ def box(start_xy, box_size, stroke_colour, stroke_width, fill_colour):
 def set_background(drawable_area, background_colour):
     """
     returns a rectangle of background_colour the size of the drawable area
-    
     """
     return box(drawable_area[:2], drawable_area[2] - drawable_area[0],
                background_colour, 0, background_colour)

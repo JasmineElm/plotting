@@ -19,6 +19,7 @@ def create_dir(dir_path):
     """
     if not os.path.exists(dir_path):
         os.makedirs(dir_path)
+    return dir_path
 
 
 def generate_filename():
@@ -33,6 +34,12 @@ def generate_filename():
     return "{}_{}.svg".format(name, timestamp)
 
 
+def print_params(param_dict):
+    """ print the parameters """
+    for key, value in param_dict.items():
+        print("{}: {}".format(key, value))
+    return None
+
 # Math functions
 
 
@@ -40,4 +47,3 @@ def quantize(value, step):
     """Quantize value to the nearest step
     """
     return int(math.floor(value / step) * step)+step
-
