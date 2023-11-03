@@ -83,17 +83,14 @@ def build_maze(wall_count, drawable_area):
 # create the output directory if it doesn't exist
 utils.create_dir(out_dir)
 
-# Set up the SVG header
+# Set file parameters
 paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
 drawable_area = svg.set_drawable_area(paper_size, bleed)
-
 filename = out_dir + utils.generate_filename()
 
-# print paper_size
 print("paper_size: {}".format(paper_size))
 print("drawable_area: {}".format(drawable_area))
 print("filename: {}".format(filename))
-
 
 # draw the maze
 maze = build_maze(DEFAULT_WALL_COUNT, drawable_area)
@@ -102,7 +99,6 @@ for i in range(len(maze)):
     for j in range(len(maze[i])):
         svg_list.append(draw.line(maze[i][j][:2], maze[i][j][2:],
                                   STROKE_WIDTH, STROKE_COLOUR))
-# svg_list.append(svg.svg_footer())
 
 doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
 svg.write_file(filename, doc)

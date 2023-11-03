@@ -98,4 +98,3 @@ for line in random_lines_circle(circle, line_count):
 doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
 svg.write_file(filename, doc)
 
-# Local variables
