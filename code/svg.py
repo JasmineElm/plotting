@@ -1,22 +1,51 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+"""
+    SVG functions
+"""
+
 
 def set_image_size(paper_size, ppmm, landscape=True):
-    if landscape:
-        return (int(paper_size[1] * ppmm), int(paper_size[0] * ppmm))
-    else:
-        return (int(paper_size[0] * ppmm), int(paper_size[1] * ppmm))
+    """Set the size of the image in pixels.
+
+    Args:
+        paper_size (tuple): (width, height)
+        ppmm (int): (pixels per mm)
+        landscape (bool, optional): _description_. Defaults to True.
+
+    Returns:
+        _type_: _description_
+    """
+    out_size = (int(paper_size[0] * ppmm), int(paper_size[1] * ppmm))
+    return set_landscape(out_size, landscape)
 
 
 def set_landscape(paper_size, landscape):
+    """rotates a paper size tuple if landscape is True
+
+    Args:
+        paper_size (tuple): (width, height)
+        landscape (bool): True if landscape
+
+    Returns:
+        tuple: (width, height)
+    """
     if landscape:
-        return (paper_size[1], paper_size[0])
-    else:
-        return paper_size
+        paper_size = (paper_size[1], paper_size[0])
+    return paper_size
 
 
 def set_drawable_area(paper_size, bleed_xy):
+    """ returns a tuple of the drawable area defined by the bleed
+
+    Args:
+        paper_size (tuple): (width, height)
+        bleed_xy (int): percentage of bleed
+
+    Returns:
+        tuple: (min_x, min_y, max_x, max_y)
+    """
     min_x = int((paper_size[0] * bleed_xy[0] / 100)/2)
     min_y = int((paper_size[1] * bleed_xy[1] / 100)/2)
     max_x = paper_size[0] - min_x
@@ -30,9 +59,10 @@ def is_in_drawable_area(xy1, xy2, drawable_area):
        xy1[1] < drawable_area[1] or xy1[1] > drawable_area[3] or \
        xy2[0] < drawable_area[0] or xy2[0] > drawable_area[2] or \
        xy2[1] < drawable_area[1] or xy2[1] > drawable_area[3]:
-        return False
+        in_drawable_area = False
     else:
-        return True
+        in_drawable_area = True
+    return in_drawable_area
 
 
 def svg_header(paper_size, drawable_area):
@@ -56,6 +86,7 @@ def svg_header(paper_size, drawable_area):
 
 
 def svg_footer():
+    """return the SVG footer"""
     return "</svg>"
 
 
@@ -77,6 +108,6 @@ def build_svg_file(paper_size, drawable_area, svg_list):
 
 def write_file(filename, svg_list):
     """ Write the SVG file """
-    with open(filename, "w") as svg_file:
+    with open(filename, "w", encoding="utf-8") as svg_file:
         for line in svg_list:
             svg_file.write(line + "\n")
