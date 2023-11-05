@@ -2,3 +2,5 @@
 .DS_Store
 *.svg
 .vscode
+venv/*
+__pycache__
