@@ -3,9 +3,15 @@
 import toml
 
 # local libraries
-import svg
-import draw  # noqa: F401
-import utils
+import helpers/svg as svg
+import helpers/draw as draw  # noqa: F401
+import helpers/utils as utils
+
+"""
+    Skeleton file for new scripts
+"""
+
+# pylint: disable=duplicate-code
 
 # Load config file
 config = toml.load('config.toml')

@@ -2,9 +2,9 @@ import random
 import toml
 
 # local imports
-import draw
-import svg
-import utils
+import helpers/draw as draw
+import helpers/svg as svg
+import helpers/utils as utils
 
 # Load config file
 config = toml.load('config.toml')

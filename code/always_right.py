@@ -1,40 +1,48 @@
-# Description: Draw a line that fits in the drawable area,
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 import random
 import toml
 
 # local libraries
-import svg
-import draw
-import utils
+import helpers/svg as svg
+import helpers/draw as draw  # noqa: F401
+import helpers/utils as utils
 
+"""
+    Skeleton file for new scripts
+"""
+
+# pylint: disable=duplicate-code
 
 # Load config file
 config = toml.load('config.toml')
 
 # Paper sizes and pixels
-A4 = config['paper_sizes']['A4']
-A3 = config['paper_sizes']['A3']
-ppmm = config['page']['pixels_per_mm']
-bleed = config['page']['bleed']
+DEFAULT_SIZE = config['paper_sizes']['A3']
+DEFAULT_LANDSCAPE = True
+DEFAULT_PPMM = config['page']['pixels_per_mm']
+DEFAULT_BLEED = config['page']['bleed']
 
-out_dir = config['directories']['output']
+DEFAULT_OUTPUT_DIR = config['directories']['output']
 
 # Stroke and fill colours
 STROKE_COLOUR = config['colours']['stroke']
-STROKE_WIDTH = ppmm
+STROKE_WIDTH = config['page']['pixels_per_mm']
 FILL_COLOUR = config['colours']['fill']
-BACKGROUND_COLOUR = config['colours']['background']
 
-# Default values
-DEFAULT_SIZE = A3
-DEFAULT_LANDSCAPE = True
-DEFAULT_PPMM = ppmm
+paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
+drawable_area = svg.set_drawable_area(paper_size, DEFAULT_BLEED)
+# set filename, creating output directory if necessary
+filename = utils.create_dir(DEFAULT_OUTPUT_DIR) + utils.generate_filename()
+utils.print_params({"paper_size": paper_size,
+                    "drawable_area": drawable_area,
+                    "filename": filename})
 
 
 # local variables
 """Put local variables here"""
-iterations = 80  # number of lines to draw
-quantize_step = ppmm * 10
+ITERATIONS = 80  # number of lines to draw
+quantize_step = DEFAULT_PPMM * 10
 
 
 # Functions
@@ -80,23 +88,6 @@ def always_right(drawable_area, iterations):
     return lines
 
 
-# create the output directory if it doesn't exist
-utils.create_dir(out_dir)
-
-# Set up the SVG header
-paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
-drawable_area = svg.set_drawable_area(paper_size, bleed)
-
-filename = out_dir + utils.generate_filename()
-
-# print paper_size
-print("paper_size: {}".format(paper_size))
-print("drawable_area: {}".format(drawable_area))
-print("filename: {}".format(filename))
-
-# create the SVG file
-svg_list = []
-svg_list.append(svg.svg_header(paper_size, drawable_area))
 # reduce drawable area by quantize_step so the lines comfortably fit
 drawable_area = (
     drawable_area[0] + quantize_step*2,
@@ -105,9 +96,10 @@ drawable_area = (
     drawable_area[3] - quantize_step*2
 )
 
-lines = always_right(drawable_area, iterations)
-for line in lines:
+svg_list = []
+line_objects = always_right(drawable_area, ITERATIONS)
+for line in line_objects:
     svg_list.append(draw.line(line[0], line[1], STROKE_WIDTH, STROKE_COLOUR))
-svg_list.append(svg.svg_footer())
 
-svg.write_file(filename, svg_list)
+doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
+svg.write_file(filename, doc)

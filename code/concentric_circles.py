@@ -4,9 +4,9 @@ import random
 import toml
 
 # local libraries
-import svg
-import draw  # noqa: F401
-import utils
+import helpers.svg as svg
+import helpers.draw as draw  # noqa: F401
+import helpers.utils as utils
 
 # Load config file
 config = toml.load('config.toml')
@@ -99,7 +99,6 @@ def generate_circle_list(drawable_area, circle_count):
             circle_list.append(circle)
         else:
             circle_list.append(max_radius)
-            
     return circle_list
 
 

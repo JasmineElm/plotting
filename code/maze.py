@@ -3,9 +3,9 @@ import random
 import toml
 
 # local libraries
-import svg
-import draw
-import utils
+import helpers/svg as svg
+import helpers/draw as draw
+import helpers/utils as utils
 
 
 # Load config file

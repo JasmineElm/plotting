@@ -5,9 +5,9 @@ import toml
 from math import pi, cos, sin
 
 # local libraries
-import svg
-import draw  # noqa: F401
-import utils
+import helpers/svg as svg
+import helpers/draw as draw  # noqa: F401
+import helpers/utils as utils
 
 # Load config file
 config = toml.load('config.toml')
