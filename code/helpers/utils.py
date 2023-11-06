@@ -41,7 +41,7 @@ def generate_filename():
 
 
 def print_params(param_dict):
-    """ print the parameters """
+    """print the parameters"""
     # print 80 * '-' + '\n'
     print(f"{68*'-'}\n")
     for key, value in param_dict.items():
@@ -79,7 +79,7 @@ def quantize(value, step, strategy="floor"):
 
 
 def get_fibonacci_list(length):
-    """ return a list of fibonacci numbers up to max_value """
+    """return a list of fibonacci numbers up to max_value"""
     fibonacci_list = [1, 2]
     while len(fibonacci_list) < length:
         fibonacci_list.append(fibonacci_list[-1] + fibonacci_list[-2])
@@ -87,7 +87,7 @@ def get_fibonacci_list(length):
 
 
 def print_pct_complete(iteration, total, last_pct_complete):
-    """ print the percentage complete """
+    """print the percentage complete"""
     pct_complete = int(iteration / total * 100)
     if pct_complete > last_pct_complete:
         # use sys.stdout.write to print without newline
@@ -98,10 +98,10 @@ def print_pct_complete(iteration, total, last_pct_complete):
 
 def random_point_on_circle(circle):
     """
-        Return a random point on a circle.
-        Args:
-            circle (tuple): A tuple containing the xy position of the centre of
-            the circle and the radius.
+    Return a random point on a circle.
+    Args:
+        circle (tuple): A tuple containing the xy position of the centre of
+        the circle and the radius.
     """
     angle = random.uniform(0, 2 * pi)
     # print("angle: {}".format(angle))
@@ -110,9 +110,10 @@ def random_point_on_circle(circle):
 
     return (x, y)
 
+
 # Random functions
 
 
 def weighted_random(weight):
     """ """
-    return random.random()*weight
+    return random.random() * weight

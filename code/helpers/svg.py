@@ -37,7 +37,7 @@ def set_landscape(paper_size, landscape):
 
 
 def set_drawable_area(paper_size, bleed_xy):
-    """ returns a tuple of the drawable area defined by the bleed
+    """returns a tuple of the drawable area defined by the bleed
 
     Args:
         paper_size (tuple): (width, height)
@@ -46,19 +46,25 @@ def set_drawable_area(paper_size, bleed_xy):
     Returns:
         tuple: (min_x, min_y, max_x, max_y)
     """
-    min_x = int((paper_size[0] * bleed_xy[0] / 100)/2)
-    min_y = int((paper_size[1] * bleed_xy[1] / 100)/2)
+    min_x = int((paper_size[0] * bleed_xy[0] / 100) / 2)
+    min_y = int((paper_size[1] * bleed_xy[1] / 100) / 2)
     max_x = paper_size[0] - min_x
     max_y = paper_size[1] - min_y
     return (min_x, min_y, max_x, max_y)
 
 
 def is_in_drawable_area(xy1, xy2, drawable_area):
-    """ return True if both points are in drawable_area """
-    if xy1[0] < drawable_area[0] or xy1[0] > drawable_area[2] or \
-       xy1[1] < drawable_area[1] or xy1[1] > drawable_area[3] or \
-       xy2[0] < drawable_area[0] or xy2[0] > drawable_area[2] or \
-       xy2[1] < drawable_area[1] or xy2[1] > drawable_area[3]:
+    """return True if both points are in drawable_area"""
+    if (
+        xy1[0] < drawable_area[0]
+        or xy1[0] > drawable_area[2]
+        or xy1[1] < drawable_area[1]
+        or xy1[1] > drawable_area[3]
+        or xy2[0] < drawable_area[0]
+        or xy2[0] > drawable_area[2]
+        or xy2[1] < drawable_area[1]
+        or xy2[1] > drawable_area[3]
+    ):
         in_drawable_area = False
     else:
         in_drawable_area = True
@@ -66,6 +72,7 @@ def is_in_drawable_area(xy1, xy2, drawable_area):
 
 
 # Circles
+
 
 def calculate_max_radius(drawable_area):
     """
@@ -80,14 +87,16 @@ def calculate_max_radius(drawable_area):
       int: The maximum radius that can be used for concentric circles on the
       canvas.
     """
-    return min(drawable_area[3] - drawable_area[1],
-               drawable_area[2] - drawable_area[0]) * 0.5
+    return (
+        min(drawable_area[3] - drawable_area[1], drawable_area[2] - drawable_area[0])
+        * 0.5
+    )
 
 
 def set_circle(drawable_area):
-    """ set the xy, radius for the largest circle that fits in drawable_area
-        circle will be centred on both axes, and be 95% of the smallest
-        drawable_area dimension
+    """set the xy, radius for the largest circle that fits in drawable_area
+    circle will be centred on both axes, and be 95% of the smallest
+    drawable_area dimension
     """
     pos_x = (drawable_area[0] + drawable_area[2]) / 2
     pos_y = (drawable_area[1] + drawable_area[3]) / 2
@@ -110,8 +119,13 @@ def svg_header(paper_size, drawable_area):
     """
     xml1 = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>"""
     xml2 = """<svg width="{}" height="{}" viewBox="{} {} {} {}" """.format(
-        paper_size[0], paper_size[1], drawable_area[0],
-        drawable_area[1], drawable_area[2], drawable_area[3])
+        paper_size[0],
+        paper_size[1],
+        drawable_area[0],
+        drawable_area[1],
+        drawable_area[2],
+        drawable_area[3],
+    )
     xml3 = """xmlns="http://www.w3.org/2000/svg" version="1.1">"""
     return xml1 + "\n" + xml2 + "\n" + xml3 + "\n"
 
@@ -122,15 +136,15 @@ def svg_footer():
 
 
 def svg_list_to_string(svg_list):
-    """ convert a list of SVG lines to a string """
+    """convert a list of SVG lines to a string"""
     return "\n".join(svg_list)
 
 
 def build_svg_file(paper_size, drawable_area, svg_list):
-    """ build the SVG file from the following parts:
-        header
-        svg_list
-        footer
+    """build the SVG file from the following parts:
+    header
+    svg_list
+    footer
     """
     svg_list.insert(0, svg_header(paper_size, drawable_area))
     svg_list.append(svg_footer())
@@ -138,7 +152,7 @@ def build_svg_file(paper_size, drawable_area, svg_list):
 
 
 def write_file(filename, svg_list):
-    """ Write the SVG file """
+    """Write the SVG file"""
     with open(filename, "w", encoding="utf-8") as svg_file:
         for line in svg_list:
             svg_file.write(line + "\n")
