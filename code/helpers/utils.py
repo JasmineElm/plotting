@@ -9,6 +9,8 @@ import os
 import sys
 import datetime
 import math
+from math import pi, cos, sin
+import random
 
 
 def create_dir(dir_path):
@@ -40,8 +42,11 @@ def generate_filename():
 
 def print_params(param_dict):
     """ print the parameters """
+    # print 80 * '-' + '\n'
+    print(f"{68*'-'}\n")
     for key, value in param_dict.items():
         print(f"{key}: {value}")
+    print(f"\n{68*'-'}")
 
 
 # Math functions
@@ -71,3 +76,43 @@ def quantize(value, step, strategy="floor"):
     elif strategy == "round":
         ret_val = int(round(value / step) * step)
     return ret_val
+
+
+def get_fibonacci_list(length):
+    """ return a list of fibonacci numbers up to max_value """
+    fibonacci_list = [1, 2]
+    while len(fibonacci_list) < length:
+        fibonacci_list.append(fibonacci_list[-1] + fibonacci_list[-2])
+    return fibonacci_list
+
+
+def print_pct_complete(iteration, total, last_pct_complete):
+    """ print the percentage complete """
+    pct_complete = int(iteration / total * 100)
+    if pct_complete > last_pct_complete:
+        # use sys.stdout.write to print without newline
+        sys.stdout.flush()
+        sys.stdout.write(f"\r{pct_complete}% complete")
+    return pct_complete
+
+
+def random_point_on_circle(circle):
+    """
+        Return a random point on a circle.
+        Args:
+            circle (tuple): A tuple containing the xy position of the centre of
+            the circle and the radius.
+    """
+    angle = random.uniform(0, 2 * pi)
+    # print("angle: {}".format(angle))
+    x = circle[0][0] + circle[1] * cos(angle)
+    y = circle[0][1] + circle[1] * sin(angle)
+
+    return (x, y)
+
+# Random functions
+
+
+def weighted_random(weight):
+    """ """
+    return random.random()*weight

@@ -65,6 +65,37 @@ def is_in_drawable_area(xy1, xy2, drawable_area):
     return in_drawable_area
 
 
+# Circles
+
+def calculate_max_radius(drawable_area):
+    """
+    Calculates the maximum radius that can be used for concentric circles on a
+    canvas of the given size.
+
+    Args:
+      drawable_area (tuple): A tuple containing the width and height of the
+      canvas.
+
+    Returns:
+      int: The maximum radius that can be used for concentric circles on the
+      canvas.
+    """
+    return min(drawable_area[3] - drawable_area[1],
+               drawable_area[2] - drawable_area[0]) * 0.5
+
+
+def set_circle(drawable_area):
+    """ set the xy, radius for the largest circle that fits in drawable_area
+        circle will be centred on both axes, and be 95% of the smallest
+        drawable_area dimension
+    """
+    pos_x = (drawable_area[0] + drawable_area[2]) / 2
+    pos_y = (drawable_area[1] + drawable_area[3]) / 2
+    pos_xy = [pos_x, pos_y]
+    radius = calculate_max_radius(drawable_area) * 0.95
+    return (pos_xy, radius)
+
+
 def svg_header(paper_size, drawable_area):
     """
     Returns an SVG header string with the specified paper and canvas sizes.

@@ -1,11 +1,13 @@
-# Description: Draw a line that fits in the drawable area,
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+""" build a maze using simple lines
+"""
+
 import random
 import toml
 
 # local libraries
-import helpers/svg as svg
-import helpers/draw as draw
-import helpers/utils as utils
+from helpers import svg, utils, draw
 
 
 # Load config file
@@ -34,31 +36,32 @@ DEFAULT_PPMM = ppmm
 DEFAULT_WALL_COUNT = 100
 
 
-def set_wall_length(wall_count, drawable_area):
+def set_wall_length(wall_count, viewport):
     """ set the length of the wall """
-    return int(max(drawable_area[2], drawable_area[3]) / wall_count)
+    return int(max(viewport[2], viewport[3]) / wall_count)
 
 
 def set_type(emptiness=0.1):
     """ set the type of wall to draw """
     wall_bound = (1 - emptiness) / 2
+    wall_type = 2
     if random.random() < emptiness:
-        return 0  # empty
-    elif random.random() < wall_bound + emptiness:
-        return 1  # horizontal
-    else:
-        return 2  # vertical
+        wall_type = 0  # none
+    if random.random() < wall_bound + emptiness:
+        wall_type = 1  # horizontal
+    # if random.random() > wall_bound + emptiness:
+    return wall_type
 
 
-def generate_wall(x1, y1, length, type):
+def generate_wall(x1, y1, length, wall_type):
     """draw a line of Length starting at x1,y1
     Type = 0 none, 1 horizontal, 2 vertical
     return [x1, y1, x2, y2]
     """
-    if type == 0:     # none
+    if wall_type == 0:     # none
         x2 = x1
         y2 = y1
-    elif type == 1:   # horizontal
+    if wall_type == 1:   # horizontal
         x2 = x1 + length
         y2 = y1
     else:             # vertical
@@ -67,17 +70,18 @@ def generate_wall(x1, y1, length, type):
     return [x1, y1, x2, y2]
 
 
-def build_maze(wall_count, drawable_area):
+def build_maze(wall_count, viewport):
     """ build 2d array of walls """
-    wall_length = set_wall_length(wall_count, drawable_area)
-    maze = []
-    for i in range(wall_count):
-        maze.append([])
-        for j in range(wall_count):
-            maze[i].append([])
-            maze[i][j] = generate_wall(
-                i * wall_length, j * wall_length, wall_length, set_type())
-    return maze
+    wall_length = set_wall_length(wall_count, viewport)
+    maze_def = []
+    for row in range(wall_count):
+        maze_def.append([])
+        for column in range(wall_count):
+            maze_def[row].append([])
+            maze_def[row][column] = generate_wall(
+                row * wall_length, column *
+                wall_length, wall_length, set_type())
+    return maze_def
 
 
 # create the output directory if it doesn't exist
@@ -88,17 +92,19 @@ paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
 drawable_area = svg.set_drawable_area(paper_size, bleed)
 filename = out_dir + utils.generate_filename()
 
-print("paper_size: {}".format(paper_size))
-print("drawable_area: {}".format(drawable_area))
-print("filename: {}".format(filename))
+utils.print_params({"paper_size": paper_size,
+                    "drawable_area": drawable_area,
+                    "filename": filename,
+                    "wall count": DEFAULT_WALL_COUNT})
+
 
 # draw the maze
 maze = build_maze(DEFAULT_WALL_COUNT, drawable_area)
 svg_list = []
-for i in range(len(maze)):
-    for j in range(len(maze[i])):
-        svg_list.append(draw.line(maze[i][j][:2], maze[i][j][2:],
-                                  STROKE_WIDTH, STROKE_COLOUR))
+for i, section in enumerate(maze):
+    for j, wall in enumerate(section):
+        svg_list.append(draw.line(wall[:2], wall[2:], STROKE_WIDTH,
+                                  STROKE_COLOUR))
 
 doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
 svg.write_file(filename, doc)

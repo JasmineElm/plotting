@@ -1,18 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+""" draw a line that fits in the drawable area,
+rotate 90% clockwise and repeat for iterations
+"""
 import random
 import toml
 
 # local libraries
-import helpers/svg as svg
-import helpers/draw as draw  # noqa: F401
-import helpers/utils as utils
+from helpers import svg, utils, draw  # noqa: F401
 
-"""
-    Skeleton file for new scripts
-"""
-
-# pylint: disable=duplicate-code
 
 # Load config file
 config = toml.load('config.toml')
@@ -34,46 +30,43 @@ paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
 drawable_area = svg.set_drawable_area(paper_size, DEFAULT_BLEED)
 # set filename, creating output directory if necessary
 filename = utils.create_dir(DEFAULT_OUTPUT_DIR) + utils.generate_filename()
-utils.print_params({"paper_size": paper_size,
-                    "drawable_area": drawable_area,
-                    "filename": filename})
 
 
 # local variables
-"""Put local variables here"""
 ITERATIONS = 80  # number of lines to draw
 quantize_step = DEFAULT_PPMM * 10
 
+utils.print_params({"paper_size": paper_size,
+                    "drawable_area": drawable_area,
+                    "filename": filename,
+                    "iterations": ITERATIONS})
+
 
 # Functions
-
-
-def always_right(drawable_area, iterations):
+def always_right(viewport, iterations):
     """ draw a line that fits in the drawable area,
     rotate 90% clockwise and repeat for iterations
     returns a list of lists of coordinates
     """
     lines = []
-    print("drawable_area: {}".format(drawable_area))
-    print("iterations: {}".format(iterations))
     # start at the centre of the drawable area
-    x = random.randint(drawable_area[0], drawable_area[2])
-    y = random.randint(drawable_area[1], drawable_area[3])
+    x = random.randint(viewport[0], viewport[2])
+    y = random.randint(viewport[1], viewport[3])
     for iteration in range(1, iterations+1):
         if iteration % 4 == 1:  # X increases, y stays the same
-            x2 = random.randint(x, drawable_area[2])
+            x2 = random.randint(x, viewport[2])
             lines.append([x, y, x2, y])
             x = x2
         elif iteration % 4 == 2:  # Y increases, x stays the same
-            y2 = random.randint(y, drawable_area[3])
+            y2 = random.randint(y, viewport[3])
             lines.append([x, y, x, y2])
             y = y2
         elif iteration % 4 == 3:  # X decreases, y stays the same
-            x2 = random.randint(drawable_area[0], x)
+            x2 = random.randint(viewport[0], x)
             lines.append([x, y, x2, y])
             x = x2
         elif iteration % 4 == 0:  # Y decreases, x stays the same
-            y2 = random.randint(drawable_area[1], y)
+            y2 = random.randint(viewport[1], y)
             lines.append([x, y, x, y2])
             y = y2
     lines = [

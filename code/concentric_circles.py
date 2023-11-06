@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import random
+""" Draw a number of concentric circles on a canvas.
+"""
 import toml
 
 # local libraries
-import helpers.svg as svg
-import helpers.draw as draw  # noqa: F401
-import helpers.utils as utils
+from helpers import svg, utils, draw
 
 # Load config file
 config = toml.load('config.toml')
@@ -38,47 +37,27 @@ CIRCLE_COUNT = 80
 # LOCAL FUNCTIONS
 
 
-def calculate_max_radius(drawable_area):
-    """
-    Calculates the maximum radius that can be used for concentric circles on a
-    canvas of the given size.
-
-    Args:
-      drawable_area (tuple): A tuple containing the width and height of the
-      canvas.
-
-    Returns:
-      int: The maximum radius that can be used for concentric circles on the
-      canvas.
-    """
-    return min(drawable_area[3] - drawable_area[1],
-               drawable_area[2] - drawable_area[0]) * 0.45
-
-
-def weighted_random(weight):
-    """ """
-    return random.random()*weight
-
-
-def skew_centre(drawable_area):
+def skew_centre(viewport):
     """Returns a tuple with the coordinates of the centre of the canvas,
     skewed by a random amount.
 
     Args:
-      drawable_area [list]: list of min_x, min_y, max_x, max_y
+      viewport [list]: list of min_x, min_y, max_x, max_y
 
     Returns:
       tuple: A tuple with the x and y coordinates of the skewed centre of the
       canvas.
     """
-    skewed_x = drawable_area[0] + \
-        (drawable_area[2] - drawable_area[0]) * (1+weighted_random(NOISE)) / 2
-    skewed_y = drawable_area[1] + \
-        (drawable_area[3] - drawable_area[1]) * (1+weighted_random(NOISE)) / 2
+    skewed_x = viewport[0] + \
+        (viewport[2] - viewport[0]) * \
+        (1+utils.weighted_random(NOISE)) / 2
+    skewed_y = viewport[1] + \
+        (viewport[3] - viewport[1]) * \
+        (1+utils.weighted_random(NOISE)) / 2
     return (int(skewed_x), int(skewed_y))
 
 
-def generate_circle_list(drawable_area, circle_count):
+def generate_circle_list(viewport, circle_count):
     """
     Generate a list of circle radii.
 
@@ -90,10 +69,10 @@ def generate_circle_list(drawable_area, circle_count):
       list: A list of circle radii.
 
     """
-    max_radius = calculate_max_radius(drawable_area)
+    max_radius = svg.calculate_max_radius(viewport) * 0.95
     circle_list = []
     for i in range(circle_count):
-        circle = int(max_radius * ((i+i*weighted_random(NOISE))
+        circle = int(max_radius * ((i+i*utils.weighted_random(NOISE))
                                    / circle_count))
         if circle < max_radius:
             circle_list.append(circle)
@@ -104,9 +83,9 @@ def generate_circle_list(drawable_area, circle_count):
 
 svg_list = []
 # fill svg_list with svg objects
-for i in generate_circle_list(drawable_area, CIRCLE_COUNT):
+for circle_def in generate_circle_list(drawable_area, CIRCLE_COUNT):
     skew_x, skew_y = skew_centre(drawable_area)
-    svg_list.append(draw.circle(skew_x, skew_y, i, STROKE_COLOUR,
+    svg_list.append(draw.circle(skew_x, skew_y, circle_def, STROKE_COLOUR,
                                 STROKE_WIDTH, FILL_COLOUR))
 
 doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
