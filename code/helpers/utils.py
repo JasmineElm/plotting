@@ -115,5 +115,5 @@ def random_point_on_circle(circle):
 
 
 def weighted_random(weight):
-    """ """
+    """Return a random number between 0 and weight"""
     return random.random() * weight
