@@ -26,7 +26,8 @@ DEFAULT_OUTPUT_DIR = config["directories"]["output"]
 STROKE_COLOUR = config["colours"]["stroke"]
 STROKE_WIDTH = config["page"]["pixels_per_mm"]
 FILL_COLOUR = config["colours"]["fill"]
-
+STYLE_LIST = [STROKE_COLOUR, STROKE_WIDTH, FILL_COLOUR]
+CIRCLE_STYLE_LIST = [STROKE_COLOUR, STROKE_WIDTH, 'white']
 # set paper size, drawable area, filename
 paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
 drawable_area = svg.set_drawable_area(paper_size, DEFAULT_BLEED)
@@ -87,8 +88,7 @@ for i in range(0, MAX_CIRCLES):
     print(point, radius)
     circle_def = [point, radius]
     svg_list.append(draw.circle(circle_def[0][0], circle_def[0][1],
-                                circle_def[1], STROKE_COLOUR, STROKE_WIDTH,
-                                'white'))
+                                circle_def[1], CIRCLE_STYLE_LIST))
 
 
 utils.print_params(

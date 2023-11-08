@@ -117,3 +117,15 @@ def random_point_on_circle(circle):
 def weighted_random(weight):
     """Return a random number between 0 and weight"""
     return random.random() * weight
+
+
+def list_to_string(in_list):
+    """_summary_
+
+    Args:
+        list (list): list of points
+    Returns:
+        string: string of points
+    """
+    string = str.join(",", map(str, in_list))
+    return string

@@ -202,3 +202,38 @@ def get_random_point(viewbox):
     """Return a random point within the canvas"""
     return (random.randint(viewbox[0], viewbox[2]),
             random.randint(viewbox[1], viewbox[3]))
+
+
+def set_polygon_size(viewable_area, polygons_per_min_dimension):
+    """Set a polygon size based on how many will fit
+       in the smallest dimension
+
+    Args:
+        viewable_area ([xy1, xy2]): drawable area
+        polygons_per_min_dimension (int): how many polygons can fit in the
+                                          smallest dimension
+    returns:
+        int: size of polygon
+    """
+    smallest_dimension = min(viewable_area[2] - viewable_area[0],
+                             viewable_area[3] - viewable_area[1])
+    return int(smallest_dimension / polygons_per_min_dimension)
+
+
+def set_polygon(xy, polygon_size, points):
+    """_summary_
+
+    Args:
+        xy ([x,y]): xy coordinates of centre of polygon
+        polygon_size (int): diameter of polygon
+        points (int): number of points that make up the polygon
+    Returns:
+        list: list of points that make up the polygon
+    """
+    polygon = []
+    for i in range(points):
+        # set a point on the circumference
+        angle = i * (2 * math.pi / points)
+        polygon.append(xy[0] + math.cos(angle) * polygon_size / 2)
+        polygon.append(xy[1] + math.sin(angle) * polygon_size / 2)
+    return polygon
