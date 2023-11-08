@@ -1,64 +1,93 @@
 #!/usr/bin/env python3
-
+# -*- coding: utf-8 -*-
+"""
+    Draw some circles on a canvas
+"""
 import random
-import datetime
-import sys
+import toml
 
-# create a svg file caontaining a number of randomly placed and sized circles
-dim_x = 1000
-dim_y = 1000
-min_circles = 10
-max_circles = 100
-min_radius = 10
-max_radius = 100
-
-def get_script_name():
-    """return the name of the script without the path and without the
-    extension"""
-    if len(sys.argv) > 0:
-        script_name = sys.argv[0].split("/")[-1].split(".")[0]
-    elif len(sys.argv) == 0:
-        script_name = __file__.split("/")[-1].split(".")[0]
-    else:
-        script_name = "random_circles"
-    return script_name
+# local libraries
+from helpers import svg, utils, draw
 
 
+# Load config file
+config = toml.load("config.toml")
 
-def filename():
-    """Return a filename with a timestamp"""
-    now = datetime.datetime.now()
-    suffix=now.strftime("%Y%m%d-%H%M%S")
-    default_file_prefix = get_script_name()
-    return default_file_prefix + "_" + suffix + ".svg"
-# create a svg file
-header="""<?xml version="1.0" encoding="UTF-8" standalone="no"?> 
-<svg width="{}" height="{}" xmlns="http://www.w3.org/2000/svg" version="1.1">
-""".format(dim_x, dim_y)
+# Paper sizes and pixels
+DEFAULT_SIZE = config["paper_sizes"]["A3"]
+DEFAULT_LANDSCAPE = True
+DEFAULT_PPMM = config["page"]["pixels_per_mm"]
+DEFAULT_BLEED = config["page"]["bleed"]
 
-footer="""</svg>"""
+DEFAULT_OUTPUT_DIR = config["directories"]["output"]
 
-# create a list of circles
-circles = []
-for i in range(random.randint(min_circles, max_circles)):
-    x = random.randint(0, dim_x)
-    y = random.randint(0, dim_y)
-    r = random.randint(min_radius, max_radius)
-    # if x+r > dim_x, or y+r > dim_y, do not append the circle to the list
-    if x+r > dim_x or y+r > dim_y:
-        continue
-    else: 
-      circles.append((x, y, r))
+# Stroke and fill colours
+STROKE_COLOUR = config["colours"]["stroke"]
+STROKE_WIDTH = config["page"]["pixels_per_mm"]
+FILL_COLOUR = config["colours"]["fill"]
 
-# create a list of svg circle elements
-circle_elements = []
-for c in circles:
-    circle_elements.append('<circle cx="{}" cy="{}" r="{}" fill="none" stroke="black" stroke-width="1"/>'.format(c[0], c[1], c[2]))
+# set paper size, drawable area, filename
+paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
+drawable_area = svg.set_drawable_area(paper_size, DEFAULT_BLEED)
+# set filename, creating output directory if necessary
+filename = utils.create_dir(DEFAULT_OUTPUT_DIR) + utils.generate_filename()
 
-# write the svg file
-filename = filename()
-with open(filename, "w") as f:
-    f.write(header)
-    for e in circle_elements:
-        f.write(e)
-    f.write(footer)
+
+# LOCAL VARIABLES
+CIRCLE_COUNT = 100
+MIN_RADIUS = 10
+MAX_RADIUS = 100
+# LOCAL FUNCTIONS
+
+
+def circle_to_square(circle):
+    """Convert a circle to a square"""
+    x = circle[0]
+    y = circle[1]
+    r = circle[2]
+    return ([x - r, y - r], [x + r, y + r])
+
+
+def cleanse_circle(circle, viewbox):
+    """Remove circles that are outside the drawable area"""
+    ret_val = False
+    square = circle_to_square(circle)
+    if svg.is_in_drawable_area(square[0], square[1], viewbox):
+        ret_val = True
+    return ret_val
+
+
+def set_circle_list(circles_count, min_radius, max_radius, viewbox):
+    """Create a list of circles"""
+    circles = []
+    for i in range(circles_count):
+        pct_complete = 0
+        pct_complete = utils.print_pct_complete(i, circles_count, pct_complete)
+        x = random.randint(viewbox[0], viewbox[2])
+        y = random.randint(viewbox[1], viewbox[3])
+        r = random.randint(min_radius, max_radius)
+        if cleanse_circle((x, y, r), viewbox):
+            circles.append((x, y, r))
+    return circles
+
+
+utils.print_params(
+    {"paper_size": paper_size, "drawable_area": drawable_area, "filename": filename}
+)
+
+svg_list = []
+circle_list = set_circle_list(CIRCLE_COUNT, MIN_RADIUS, MAX_RADIUS, drawable_area)
+for circle_def in circle_list:
+    svg_list.append(
+        draw.circle(
+            circle_def[0],
+            circle_def[1],
+            circle_def[2],
+            STROKE_COLOUR,
+            STROKE_WIDTH,
+            FILL_COLOUR,
+        )
+    )
+
+doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
+svg.write_file(filename, doc)

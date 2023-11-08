@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-""" Create a circle using lines joining random points on the 
-    circumference with straight lines
+""" Create a circle using lines joining random points on the
+    circumference with arcs
 """
-import toml
 
+import toml
 
 # local libraries
 from helpers import svg, utils, draw
@@ -24,6 +24,7 @@ DEFAULT_OUTPUT_DIR = config['directories']['output']
 STROKE_COLOUR = config['colours']['stroke']
 STROKE_WIDTH = config['page']['pixels_per_mm']
 FILL_COLOUR = config['colours']['fill']
+STYLE_LIST = [STROKE_COLOUR, STROKE_WIDTH, FILL_COLOUR]
 
 paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
 drawable_area = svg.set_drawable_area(paper_size, DEFAULT_BLEED)
@@ -47,22 +48,25 @@ def random_lines_circle(circle, line_count):
         pct_complete = utils.print_pct_complete(i, line_count, pct_complete)
         start_xy = utils.random_point_on_circle(circle)
         end_xy = utils.random_point_on_circle(circle)
-        line_list.append((start_xy, end_xy))
+        # control is a point within the circle
+        control_xy = utils.random_point_on_circle(circle)
+        line_list.append((start_xy, control_xy, end_xy))
     return line_list
 
 
 # add your svg code here
+svg_list = []
+# fill svg_list with svg objects
 circle_def = svg.set_circle(drawable_area)
-# print params
 utils.print_params({"paper_size": paper_size,
                     "drawable_area": drawable_area,
                     "filename": filename,
                     "line count": LINE_COUNT,
                     "circle diameter": circle_def[1]})
-svg_list = []
 
 for line in random_lines_circle(circle_def, LINE_COUNT):
-    svg_list.append(draw.line(line[0], line[1], STROKE_WIDTH, STROKE_COLOUR))
+    svg_list.append(draw.quadratic_curve(line[0], line[1], line[2],
+                                         STYLE_LIST))
 
 doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
 svg.write_file(filename, doc)
