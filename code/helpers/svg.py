@@ -71,7 +71,7 @@ def calculate_max_radius(drawable_area):
     canvas of the given size.
 
     Args:
-      drawable_area (tuple): A tuple containing the width and height of the
+      drawable_area (tuple): the width and height of the
       canvas.
 
     Returns:
@@ -101,9 +101,8 @@ def svg_header(paper_size, drawable_area):
     Returns an SVG header string with the specified paper and canvas sizes.
 
     Args:
-        paper_size (tuple): A tuple containing the width and height of the paper.
-        canvas_size (tuple): A tuple containing the width and height of the
-        canvas.
+        paper_size (tuple): the width and height of the paper.
+        canvas_size (tuple): the width and height of the canvas.
 
     Returns:
         str: An SVG header string with the specified paper and canvas sizes.
@@ -112,7 +111,7 @@ def svg_header(paper_size, drawable_area):
     xml1 += f"<svg width='{paper_size[0]}' height='{paper_size[1]}' "
     xml1 += f"viewBox='{drawable_area[0]} {drawable_area[1]} "
     xml1 += f"{drawable_area[2]} {drawable_area[3]}' "
-    xml1 += "xmlns='https://www.w3.org/2000/svg' version='1.1'>"
+    xml1 += "xmlns='http://www.w3.org/2000/svg' version='1.1'>"
     return xml1 + '\n'
 
 
@@ -184,7 +183,7 @@ def get_centrality(viewbox, xy):
         xy ([x,y]): point to check
 
     Returns:
-        float: float between 0 and 1, depending on the distance of 
+        float: float between 0 and 1, depending on the distance of
         (x,y) from the centre of the canvas
         0 = centre, 1 = edge
     """
