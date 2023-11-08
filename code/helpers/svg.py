@@ -57,14 +57,10 @@ def set_drawable_area(paper_size, bleed_xy):
 
 def is_in_drawable_area(xy1, xy2, drawable_area):
     """ return True if both points are in drawable_area """
-    if xy1[0] < drawable_area[0] or xy1[0] > drawable_area[2] or \
-       xy1[1] < drawable_area[1] or xy1[1] > drawable_area[3] or \
-       xy2[0] < drawable_area[0] or xy2[0] > drawable_area[2] or \
-       xy2[1] < drawable_area[1] or xy2[1] > drawable_area[3]:
-        in_drawable_area = False
-    else:
-        in_drawable_area = True
-    return in_drawable_area
+    return (drawable_area[0] <= xy1[0] <= drawable_area[2] and
+            drawable_area[1] <= xy1[1] <= drawable_area[3] and
+            drawable_area[0] <= xy2[0] <= drawable_area[2] and
+            drawable_area[1] <= xy2[1] <= drawable_area[3])
 
 
 # Circles
@@ -105,19 +101,19 @@ def svg_header(paper_size, drawable_area):
     Returns an SVG header string with the specified paper and canvas sizes.
 
     Args:
-      paper_size (tuple): A tuple containing the width and height of the paper.
-      canvas_size (tuple): A tuple containing the width and height of the
-      canvas.
+        paper_size (tuple): A tuple containing the width and height of the paper.
+        canvas_size (tuple): A tuple containing the width and height of the
+        canvas.
 
     Returns:
-      str: An SVG header string with the specified paper and canvas sizes.
+        str: An SVG header string with the specified paper and canvas sizes.
     """
-    xml1 = """<?xml version="1.0" encoding="UTF-8" standalone="no"?>"""
-    xml2 = """<svg width="{}" height="{}" viewBox="{} {} {} {}" """.format(
-        paper_size[0], paper_size[1], drawable_area[0],
-        drawable_area[1], drawable_area[2], drawable_area[3])
-    xml3 = """xmlns="http://www.w3.org/2000/svg" version="1.1">"""
-    return xml1 + "\n" + xml2 + "\n" + xml3 + "\n"
+    xml1 = "<?xml version='1.0' encoding='UTF-8' standalone='no'?>"
+    xml1 += f"<svg width='{paper_size[0]}' height='{paper_size[1]}' "
+    xml1 += f"viewBox='{drawable_area[0]} {drawable_area[1]} "
+    xml1 += f"{drawable_area[2]} {drawable_area[3]}' "
+    xml1 += "xmlns='https://www.w3.org/2000/svg' version='1.1'>"
+    return xml1 + '\n'
 
 
 def svg_footer():
@@ -156,10 +152,8 @@ def circles_intersect(circle_a, circle_b):
     """ return True if circles intersect """
     distance = math.sqrt((circle_a[0] - circle_b[0])**2 +
                          (circle_a[1] - circle_b[1])**2)
-    if distance < circle_a[2] + circle_b[2]:
-        return True
-    else:
-        return False
+    # return True if distance between centres is less than sum of radii
+    return distance < circle_a[2] + circle_b[2]
 
 
 def set_bounding_box(points_list):
@@ -176,8 +170,7 @@ def bounding_box_intersect(box_a, box_b):
     if box_a[2] < box_b[0] or box_a[0] > box_b[2] or \
        box_a[3] < box_b[1] or box_a[1] > box_b[3]:
         return False
-    else:
-        return True
+    return True
 
 
 # Positioning functions
