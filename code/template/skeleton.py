@@ -21,9 +21,10 @@ DEFAULT_BLEED = config["page"]["bleed"]
 DEFAULT_OUTPUT_DIR = config["directories"]["output"]
 
 # Stroke and fill colours
-STROKE_COLOUR = config["colours"]["stroke"]
-STROKE_WIDTH = config["page"]["pixels_per_mm"]
-FILL_COLOUR = config["colours"]["fill"]
+
+STYLES = [config["colours"]["stroke"],
+          config["page"]["pixels_per_mm"],
+          config["colours"]["fill"]]
 
 # set paper size, drawable area, filename
 paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
@@ -38,7 +39,9 @@ filename = utils.create_dir(DEFAULT_OUTPUT_DIR) + utils.generate_filename()
 
 
 utils.print_params(
-    {"paper_size": paper_size, "drawable_area": drawable_area, "filename": filename}
+    {"paper_size": paper_size,
+     "drawable_area": drawable_area,
+     "filename": filename}
 )
 
 svg_list = []
