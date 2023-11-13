@@ -2,6 +2,7 @@
     This module contains functions used in the body of svg files
 """
 
+
 def line(start_xy, end_xy, width, colour):
     """return a line from start_xy to end_xy"""
     linedef = f"<line x1='{start_xy[0]}' y1='{start_xy[1]}' "
@@ -19,7 +20,7 @@ def box(start_xy, box_size, stroke_colour, stroke_width, fill_colour):
     return f"<rect {position}{size}{stroke}{fill}/>"
 
 
-def circle(cx, cy, r, style_list):
+def circle(xy_pos, radius, style_list):
     """
     Returns an SVG circle element as a string with the specified center
     coordinates and radius.
@@ -32,7 +33,7 @@ def circle(cx, cy, r, style_list):
     Returns:
         str: An SVG circle element as a string.
     """
-    circle_def = f"<circle cx='{cx}' cy='{cy}' r='{r}' "
+    circle_def = f"<circle cx='{xy_pos[0]}' cy='{xy_pos[1]}' r='{radius}' "
     circle_style = f"stroke='{style_list[0]}' stroke-width='{style_list[1]}' "
     circle_style += f"fill='{style_list[2]}' />"
     return circle_def + "\n" + circle_style + "\n"

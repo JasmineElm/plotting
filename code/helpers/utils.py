@@ -66,15 +66,17 @@ def quantize(value, step, strategy="floor"):
     Returns:
         int : quantized value
     """
+    value_div_step = value / step
+
     # if floor, round down to nearest step
     if strategy == "floor":
-        ret_val = int(math.floor(value / step) * step)
+        ret_val = int(math.floor(value_div_step) * step)
     # if ceil, round up to nearest step
     elif strategy == "ceil":
-        ret_val = int(math.ceil(value / step) * step)
+        ret_val = int(math.ceil(value_div_step) * step)
     # if round, round to nearest step
     elif strategy == "round":
-        ret_val = int(round(value / step) * step)
+        ret_val = int(round(value_div_step) * step)
     return ret_val
 
 
@@ -88,11 +90,11 @@ def get_fibonacci_list(length):
 
 def print_pct_complete(iteration, total, last_pct_complete):
     """print the percentage complete"""
-    pct_complete = int(iteration / total * 100)
+    pct_complete = int((iteration / total) * 100)
     if pct_complete > last_pct_complete:
         # use sys.stdout.write to print without newline
-        sys.stdout.flush()
         sys.stdout.write(f"\r{pct_complete}% complete")
+        sys.stdout.flush()
     return pct_complete
 
 
@@ -104,9 +106,9 @@ def random_point_on_circle(circle):
         the circle and the radius.
     """
     angle = random.uniform(0, 2 * pi)
-    # print("angle: {}".format(angle))
-    x = circle[0][0] + circle[1] * cos(angle)
-    y = circle[0][1] + circle[1] * sin(angle)
+    radius = circle[1]
+    x = circle[0][0] + radius * cos(angle)
+    y = circle[0][1] + radius * sin(angle)
 
     return (x, y)
 
@@ -127,5 +129,4 @@ def list_to_string(in_list):
     Returns:
         string: string of points
     """
-    string = str.join(",", map(str, in_list))
-    return string
+    return ','.join(map(str, in_list))

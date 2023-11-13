@@ -157,10 +157,16 @@ def circles_intersect(circle_a, circle_b):
 
 def set_bounding_box(points_list):
     """ return a bounding box for a list of points """
-    min_x = min(points_list, key=lambda x: x[0])[0]
-    min_y = min(points_list, key=lambda x: x[1])[1]
-    max_x = max(points_list, key=lambda x: x[0])[0]
-    max_y = max(points_list, key=lambda x: x[1])[1]
+    min_x = min_y = float('inf')
+    max_x = max_y = float('-inf')
+
+    for point in points_list:
+        x, y = point
+        min_x = min(min_x, x)
+        min_y = min(min_y, y)
+        max_x = max(max_x, x)
+        max_y = max(max_y, y)
+
     return (min_x, min_y, max_x, max_y)
 
 
@@ -187,15 +193,22 @@ def get_centrality(viewbox, xy):
         (x,y) from the centre of the canvas
         0 = centre, 1 = edge
     """
-    distance = math.sqrt((viewbox[0] - xy[0])**2 + (viewbox[1] - xy[1])**2) \
-        / math.sqrt((viewbox[0] - viewbox[2])**2 +
-                    (viewbox[1] - viewbox[3])**2)
-    return distance
+    dx = viewbox[0] - xy[0]
+    dy = viewbox[1] - xy[1]
+    distance = math.hypot(dx, dy)
+
+    dx_viewbox = viewbox[0] - viewbox[2]
+    dy_viewbox = viewbox[1] - viewbox[3]
+    max_distance = math.hypot(dx_viewbox, dy_viewbox)
+
+    return distance / max_distance
 
 
 def get_centre(viewbox):
     """Return the centre of the canvas"""
-    return ((viewbox[2] - viewbox[0]) / 2, (viewbox[3] - viewbox[1]) / 2)
+    diff_x = viewbox[2] - viewbox[0]
+    diff_y = viewbox[3] - viewbox[1]
+    return (diff_x / 2, diff_y / 2)
 
 
 def get_random_point(viewbox):

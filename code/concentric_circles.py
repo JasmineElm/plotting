@@ -22,6 +22,7 @@ DEFAULT_OUTPUT_DIR = config['directories']['output']
 STROKE_COLOUR = config['colours']['stroke']
 STROKE_WIDTH = config['page']['pixels_per_mm']
 FILL_COLOUR = config['colours']['fill']
+STYLE_LIST = [STROKE_COLOUR, STROKE_WIDTH, FILL_COLOUR]
 
 paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
 drawable_area = svg.set_drawable_area(paper_size, DEFAULT_BLEED)
@@ -54,7 +55,7 @@ def skew_centre(viewport):
     skewed_y = viewport[1] + \
         (viewport[3] - viewport[1]) * \
         (1+utils.weighted_random(NOISE)) / 2
-    return (int(skewed_x), int(skewed_y))
+    return ([int(skewed_x), int(skewed_y)])
 
 
 def generate_circle_list(viewport, circle_count):
@@ -84,9 +85,8 @@ def generate_circle_list(viewport, circle_count):
 svg_list = []
 # fill svg_list with svg objects
 for circle_def in generate_circle_list(drawable_area, CIRCLE_COUNT):
-    skew_x, skew_y = skew_centre(drawable_area)
-    svg_list.append(draw.circle(skew_x, skew_y, circle_def, STROKE_COLOUR,
-                                STROKE_WIDTH, FILL_COLOUR))
+    skew_xy = skew_centre(drawable_area)
+    svg_list.append(draw.circle(skew_xy, circle_def, STYLE_LIST))
 
 doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
 svg.write_file(filename, doc)

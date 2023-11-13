@@ -87,7 +87,7 @@ for i in range(0, MAX_CIRCLES):
         svg.get_centrality(drawable_area, point)
     print(point, radius)
     circle_def = [point, radius]
-    svg_list.append(draw.circle(circle_def[0][0], circle_def[0][1],
+    svg_list.append(draw.circle(circle_def[0],
                                 circle_def[1], CIRCLE_STYLE_LIST))
 
 

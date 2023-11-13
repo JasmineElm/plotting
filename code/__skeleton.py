@@ -6,7 +6,7 @@
 import toml
 
 # local libraries
-from helpers import svg, utils, draw
+from helpers import svg, utils, draw  # pylint: disable=import-error
 
 
 # Load config file

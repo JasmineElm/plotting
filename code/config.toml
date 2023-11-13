@@ -3,6 +3,7 @@ A5 = [148, 210]
 A4 = [210, 297]
 A3 = [297, 420]
 A2 = [420, 594]
+default = 
 
 [page]
 bleed = [5,5]       # % bleed on x and y
@@ -20,4 +21,6 @@ width = 1
 [directories]
 output = '../output/'
 
-
+[lint]
+rcfile = '../pylintrc'
+threshold = 9.9
