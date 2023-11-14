@@ -24,6 +24,7 @@ def get_files():
                 files.append(os.path.join(root, filename))
     return files
 
+
 def run_file(filename):
     """Run each script using python3"""
     cmd = "python3 " + filename
