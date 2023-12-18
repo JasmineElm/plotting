@@ -34,7 +34,7 @@ utils.print_params({"paper_size": paper_size,
 
 # LOCAL VARIABLES
 NOISE = 0.05
-circle_count = 80
+CIRCLE_COUNT = 80
 # LOCAL FUNCTIONS
 
 
