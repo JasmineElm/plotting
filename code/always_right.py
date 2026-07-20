@@ -56,7 +56,7 @@ def always_right(viewport, iterations):
     x = random.randint(viewport[0], viewport[2])
     y = random.randint(viewport[1], viewport[3])
     points.append((x, y))
-    
+
     for iteration in range(1, iterations+1):
         if iteration % 4 == 1:  # X increases, y stays the same
             x = random.randint(x, viewport[2])
@@ -67,7 +67,7 @@ def always_right(viewport, iterations):
         elif iteration % 4 == 0:  # Y decreases, x stays the same
             y = random.randint(viewport[1], y)
         points.append((x, y))
-        
+
     points = [
         (utils.quantize(px, quantize_step), utils.quantize(py, quantize_step))
         for px, py in points
@@ -87,9 +87,9 @@ svg_list = []
 points = always_right(drawable_area, ITERATIONS)
 
 # build a compound path
-d = "M " + " L ".join(f"{p[0]} {p[1]}" for p in points)
-path_tag = f"<path d='{d}' fill='{FILL_COLOUR}' stroke='{STROKE_COLOUR}' stroke-width='{STROKE_WIDTH}' />\n"
-svg_list.append(path_tag)
+PATH_D = "M " + " L ".join(f"{p[0]} {p[1]}" for p in points)
+PATH_TAG = f"<path d='{PATH_D}' fill='{FILL_COLOUR}' stroke='{STROKE_COLOUR}' stroke-width='{STROKE_WIDTH}' />\n"
+svg_list.append(PATH_TAG)
 
 doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
 svg.write_file(filename, doc)

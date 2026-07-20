@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-    Skeleton file for new scripts
+    snowflake-like drawing
 """
 import os
 import tomllib
@@ -28,35 +28,36 @@ DEFAULT.update({"FILENAME": utils.create_dir(
 
 # LOCAL FUNCTIONS
 
-def snowflake(x, y, arms, radius, depth, styles):
+def snowflake(center, arms, radius, depth, styles):
     """Draw a snowflake"""
     linearray = []
     if depth == 0:
-        return
-    else:
-        # draw arms of snowflake, 360/arms degrees apart, radiaus long
-        len = radius
-        two_thirds = 2 / 3
-        sqrt_third = math.sqrt(3) / 3
-        for i in range(arms):
-            # draw a line of length radius
-            while depth > 0:
-                len_third = len / 3
-                len_sqrt_third = len * sqrt_third
-                linearray.append(
-                    draw.line([x, y], [x + len, y], styles[1], styles[0]))
-                # 2/3 of the way along the line, draw a new line at 60 degrees
-                # of length radius/3
-                linearray.append(draw.line(
-                    [x + len * two_thirds, y], [x + len * two_thirds + len_third, y + len_sqrt_third], styles[1], styles[0]))
-                # 2/3 of the way along the line, draw a new line at -60
-                # degrees of length radius/3
-                linearray.append(draw.line(
-                    [x + len * two_thirds, y], [x + len * two_thirds + len_third, y - len_sqrt_third], styles[1], styles[0]))
-                depth -= 1
-                len = len_third
-                x = len * two_thirds
-                y = len_sqrt_third
+        return linearray
+
+    x, y = center
+    # draw arms of snowflake, 360/arms degrees apart, radiaus long
+    length = radius
+    two_thirds = 2 / 3
+    sqrt_third = math.sqrt(3) / 3
+    for i in range(arms):
+        # draw a line of length radius
+        while depth > 0:
+            len_third = length / 3
+            len_sqrt_third = length * sqrt_third
+            linearray.append(
+                draw.line([x, y], [x + length, y], styles[1], styles[0]))
+            # 2/3 of the way along the line, draw a new line at 60 degrees
+            # of length radius/3
+            linearray.append(draw.line(
+                [x + length * two_thirds, y], [x + length * two_thirds + len_third, y + len_sqrt_third], styles[1], styles[0]))
+            # 2/3 of the way along the line, draw a new line at -60
+            # degrees of length radius/3
+            linearray.append(draw.line(
+                [x + length * two_thirds, y], [x + length * two_thirds + len_third, y - len_sqrt_third], styles[1], styles[0]))
+            depth -= 1
+            length = len_third
+            x = length * two_thirds
+            y = len_sqrt_third
     return linearray
 
 
@@ -67,7 +68,7 @@ svg_list = []
 
 center = [DEFAULT['DRAWABLE_AREA'][2] / 2, DEFAULT['DRAWABLE_AREA'][3] / 2]
 # append snowflake to svg_list
-snowflake_list = snowflake(center[0], center[1], 7, 100, 5, DEFAULT['STYLES'])
+snowflake_list = snowflake(center, 7, 100, 5, DEFAULT['STYLES'])
 for line in snowflake_list:
     svg_list.append(line)
 
