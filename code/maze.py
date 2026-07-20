@@ -4,14 +4,17 @@
 """
 
 import random
-import toml
+import os
+import tomllib
 
 # local libraries
 from helpers import svg, utils, draw
 
 
 # Load config file
-config = toml.load('config.toml')
+config_path = os.path.join(os.path.dirname(__file__), "config.toml")
+with open(config_path, "rb") as f:
+    config = tomllib.load(f)
 
 # Paper sizes and pixels
 A4 = config['paper_sizes']['A4']

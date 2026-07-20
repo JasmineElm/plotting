@@ -4,14 +4,17 @@
     honeycomb: fill a page with hexagons
 """
 import random
-import toml
+import os
+import tomllib
 
 # local libraries
 from helpers import svg, utils, draw
 
 
 # Load config file
-config = toml.load("config.toml")
+config_path = os.path.join(os.path.dirname(__file__), "config.toml")
+with open(config_path, "rb") as f:
+    config = tomllib.load(f)
 
 # Paper sizes and pixels
 DEFAULT_SIZE = config["paper_sizes"]["A3"]
@@ -64,8 +67,8 @@ for x in range(drawable_area[0], drawable_area[2], SIZE + GAP):
             else:
                 xy_pos = (x, line)
             points_def = svg.set_polygon(xy_pos, SIZE, POINTS)
-            POINTS_DEF_STRING = utils.list_to_string(points_def)
-            svg_list.append(draw.polygon(POINTS_DEF_STRING, STYLE_LIST))
+            points_def_string = utils.list_to_string(points_def)
+            svg_list.append(draw.polygon(points_def_string, STYLE_LIST))
 
 doc = svg.build_svg_file(paper_size, drawable_area, svg_list)
 svg.write_file(filename, doc)

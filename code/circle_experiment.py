@@ -3,14 +3,17 @@
 """ Create a circle using lines joining random points on the 
     circumference with straight lines
 """
-import toml
+import os
+import tomllib
 
 
 # local libraries
 from helpers import svg, utils, draw
 
 # Load config file
-config = toml.load('config.toml')
+config_path = os.path.join(os.path.dirname(__file__), "config.toml")
+with open(config_path, "rb") as f:
+    config = tomllib.load(f)
 
 # Paper sizes and pixels
 DEFAULT_SIZE = config['paper_sizes']['A3']

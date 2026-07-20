@@ -12,13 +12,14 @@ landscape = true       # landscape or portrait
 [colours]
 stroke = 'black'
 fill = 'none'
-background = 'none'
+background = 'white'
 
 [stroke]
 width = 1
 
 [directories]
 output = '../output/'
+optimised = 'optimised/'
 
 [lint]
 rcfile = '../pylintrc'
@@ -30,4 +31,7 @@ LANDSCAPE = true
 PPMM = 10
 BLEED = [5,5]
 OUTPUT_DIR = '../output/'
+OPTIMISED_DIR = '../output/optimised/'
 STYLES = ['black', '10', 'none', 'none']
+
+

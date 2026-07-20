@@ -11,12 +11,12 @@ def line(start_xy, end_xy, width, colour):
     return linedef + style + "\n"
 
 
-def box(start_xy, box_size, stroke_colour, stroke_width, fill_colour):
+def box(start_xy, box_size, styles):
     """draw a box"""
     position = f" x='{start_xy[0]}' y='{start_xy[1]}' "
     size = f" width='{box_size}' height='{box_size}' "
-    stroke = f" stroke='{stroke_colour}' stroke-width='{stroke_width}' "
-    fill = f" fill='{fill_colour}' "
+    stroke = f" stroke='{styles[0]}' stroke-width='{styles[1]}' "
+    fill = f" fill='{styles[2]}' "
     return f"<rect {position}{size}{stroke}{fill}/>"
 
 
@@ -46,9 +46,7 @@ def set_background(drawable_area, background_colour):
     return box(
         drawable_area[:2],
         drawable_area[2] - drawable_area[0],
-        background_colour,
-        0,
-        background_colour,
+        (background_colour, 0, background_colour),
     )
 
 

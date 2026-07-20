@@ -6,6 +6,8 @@
 """
 import math
 import random
+import os
+import tomllib
 
 
 def set_image_size(paper_size, ppmm, landscape=True):
@@ -46,24 +48,33 @@ def set_drawable_area(paper_size, bleed_xy):
         bleed_xy (int): percentage of bleed
 
     Returns:
-        tuple: (min_x, min_y, max_x, max_y)
+        tuple: (min_x, min_y, width, height)
     """
     min_x = int((paper_size[0] * bleed_xy[0] / 100)/2)
     min_y = int((paper_size[1] * bleed_xy[1] / 100)/2)
-    max_x = paper_size[0] - min_x
-    max_y = paper_size[1] - min_y
-    return (min_x, min_y, max_x, max_y)
+    width = paper_size[0] - (min_x * 2)
+    height = paper_size[1] - (min_y * 2)
+    return (min_x, min_y, width, height)
 
 
-def is_in_drawable_area(xy1, xy2, drawable_area):
+def viewbox_to_drawable_area(viewbox):
+    """Convert viewbox to x,y coordinates"""
+    x1, y1, width, height = viewbox
+    x2 = x1 + width
+    y2 = y1 + height
+    return x1, y1, x2, y2
+
+
+def is_in_drawable_area(xy1, xy2, viewbox):
     """ return True if both points are in drawable_area """
+    drawable_area = viewbox_to_drawable_area(viewbox)
     return (drawable_area[0] <= xy1[0] <= drawable_area[2] and
             drawable_area[1] <= xy1[1] <= drawable_area[3] and
             drawable_area[0] <= xy2[0] <= drawable_area[2] and
             drawable_area[1] <= xy2[1] <= drawable_area[3])
 
-
 # Circles
+
 
 def calculate_max_radius(drawable_area):
     """
@@ -107,12 +118,22 @@ def svg_header(paper_size, drawable_area):
     Returns:
         str: An SVG header string with the specified paper and canvas sizes.
     """
-    xml1 = "<?xml version='1.0' encoding='UTF-8' standalone='no'?>"
+    try:
+        config_path = os.path.join(os.path.dirname(__file__), "..", "config.toml")
+        with open(config_path, "rb") as f:
+            config = tomllib.load(f)
+            bg = config.get("colours", {}).get("background", "none")
+    except Exception:
+        bg = "none"
+
+    xml1 = "<?xml version='1.0' encoding='UTF-8' standalone='no'?>\n"
     xml1 += f"<svg width='{paper_size[0]}' height='{paper_size[1]}' "
     xml1 += f"viewBox='{drawable_area[0]} {drawable_area[1]} "
     xml1 += f"{drawable_area[2]} {drawable_area[3]}' "
-    xml1 += "xmlns='http://www.w3.org/2000/svg' version='1.1'>"
-    return xml1 + '\n'
+    xml1 += "xmlns='http://www.w3.org/2000/svg' version='1.1'>\n"
+    if bg and bg != "none":
+        xml1 += f"<rect width='100%' height='100%' fill='{bg}' />\n"
+    return xml1
 
 
 def svg_footer():
@@ -250,3 +271,72 @@ def set_polygon(xy, polygon_size, points):
         polygon.append(xy[0] + math.cos(angle) * polygon_size / 2)
         polygon.append(xy[1] + math.sin(angle) * polygon_size / 2)
     return polygon
+
+# Grid functions
+
+
+def generate_square_grid(canvas, grid_size, noise=0.05):
+    """return a list of points that fit within the grid
+        grid begins at canvas[0] + grid_size, canvas[1] + grid_size
+        grid ends at canvas[2] - grid_size, canvas[3] - grid_size
+        noise is a percentage of the grid_size"""
+    # store canvas boundaries in variables
+    x_start = canvas[0]
+    y_start = canvas[1]
+    x_end = canvas[2]
+    y_end = canvas[3]
+
+    # if noise is 0, use list comprehension
+    if noise == 0:
+        return [(x, y)
+                for x in range(x_start, x_end, grid_size)
+                for y in range(y_start, y_end, grid_size)]
+
+    # if noise is not 0, use generator expression
+    return ((x + random.uniform(-grid_size * noise, grid_size * noise),
+             y + random.uniform(-grid_size * noise, grid_size * noise))
+            for x in range(x_start, x_end, grid_size)
+            for y in range(y_start, y_end, grid_size))
+
+
+def get_relationships(start_xy, end_xy, diag_def=3):
+    """determine direction between end_xy and start_xy"""
+    diff_x = end_xy[0] - start_xy[0]
+    diff_y = end_xy[1] - start_xy[1]
+    abs_diff_x = abs(diff_x)
+    abs_diff_y = abs(diff_y)
+    diag_x = diff_x / diag_def
+    diag_y = diff_y / diag_def
+    mode = ""
+    # if diff_x > diff_y and diff Y < 1/3 diff_x, hotioontal
+    if abs_diff_x > abs_diff_y and abs_diff_y < abs(diag_x):
+        mode = "horizontal"
+    # if diff_y > diff_x and diff_x < 1/3 diff_y, vertical
+    if abs_diff_y > abs_diff_x and abs_diff_x < abs(diag_y):
+        mode = "vertical"
+    if diff_x > 0:
+        if diff_y > 0:
+            mode = "diagonal_down"
+        else:
+            mode = "diagonal_up"
+    return mode
+
+
+def join_points(point, neighbours, direction, sparseness=0.5, diag_def=3):
+    """return tuples of [start, end] points for each neighbour
+    direction sets the direction of the line; horizontal, vertical, diagonal
+    sparseness is whether to return all points or a subset"""
+    # filter neighbours by direction
+    neighbours = [n for n in neighbours
+                  if get_relationships(point, n, diag_def) == direction]
+    # filter this list by sparseness
+    neighbours = [n for n in neighbours if random.random() > sparseness]
+    # return a list of tuples of [start, end] points
+    return [[point, n] for n in neighbours]
+
+
+def get_neighbours(point, grid, radius):
+    """return a list of points within radius of point"""
+    return [p for p in grid if (point[0] - radius <= p[0] <= point[0] + radius
+                                and point[1] - radius <=
+                                p[1] <= point[1] + radius)]

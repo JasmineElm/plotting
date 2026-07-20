@@ -7,11 +7,13 @@ This repo contains some scripts developed while learning about plotting.
 - `always_right.py`: a line that always turns right
 - `boxes.py`: brute-force fill a page with boxes
 - `circle_experiment.py`: create a circle using straight lines
-- `circle_experiment2.py`: create a circle using 
+- `circle_experiment2.py`: create a circle using curved lines
 - `grid_1.py`: create a square grid and connect nodes
 - `honeycomb.py`: fill a page with hexagons
 - `maze.py`: generate a maze of vertical and horizontal lines
+- `moire_1.py`: moire pattern using a grid of dots and concentric circles
 - `random_circles.py`: fill a page with random circles
+- `snowflakes.py`: a snowflake
 - `xplsn.py`: lines radiating from a point, broken by circles
 
 ### Helpers

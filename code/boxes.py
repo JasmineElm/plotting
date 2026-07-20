@@ -2,13 +2,16 @@
 # -*- coding: utf-8 -*-
 """ fill a canvas with boxes of (defined) random sizes"""
 import random
-import toml
+import os
+import tomllib
 
 # local libraries
-from helpers import svg, utils, draw  # noqa: F401
+from helpers import svg, utils, draw
 
 # Load config file
-config = toml.load('config.toml')
+config_path = os.path.join(os.path.dirname(__file__), "config.toml")
+with open(config_path, "rb") as f:
+    config = tomllib.load(f)
 
 # Paper sizes and pixels
 DEFAULT_SIZE = config['paper_sizes']['A3']
@@ -22,6 +25,7 @@ DEFAULT_OUTPUT_DIR = config['directories']['output']
 STROKE_COLOUR = config['colours']['stroke']
 STROKE_WIDTH = config['page']['pixels_per_mm']
 FILL_COLOUR = config['colours']['fill']
+STYLES = [STROKE_COLOUR, STROKE_WIDTH, FILL_COLOUR]
 
 paper_size = svg.set_image_size(DEFAULT_SIZE, DEFAULT_PPMM, DEFAULT_LANDSCAPE)
 drawable_area = svg.set_drawable_area(paper_size, DEFAULT_BLEED)
@@ -61,8 +65,8 @@ def set_box_list(viewbox, list_of_box_sizes, iterations, box_per_iteration):
             # boxes per iteration
             box_size = random.choice(list_of_box_sizes[1:])
             # count down from iterations*boxes_per_iteration
-            boxes_left = i*j
-            pct_complete = utils.print_pct_complete(boxes_left,
+            boxes_processed = (i - 1) * box_per_iteration + j
+            pct_complete = utils.print_pct_complete(boxes_processed,
                                                     boxes_total,
                                                     pct_complete)
             box_x = random.randint(viewbox[0],
@@ -73,33 +77,26 @@ def set_box_list(viewbox, list_of_box_sizes, iterations, box_per_iteration):
                        box_y < x[1] + x[2] and box_y + box_size > x[1]
                        for x in boxes):
                 boxes.append([box_x, box_y, box_size])
-            boxes = [x for x in boxes if not (x[0] < viewbox[0] or
-                                              x[0] + x[2] > viewbox[2]
-                                              or x[1] < viewbox[1] or
-                                              x[1] + x[2] > viewbox[3]
-                                              )]
     for box in boxes:
         box[2] = box[2] - list_of_box_sizes[0]
     boxes.sort(key=lambda x: (x[0], x[1], x[2]))
     return boxes
 
 
-def create_svg_list(viewbox, stroke_colour, stroke_width, fill_colour):
+def create_svg_list(viewbox, styles, box_size_list):
     """ return a list of svg elements """
     temp_svg_list = []
     boxes = set_box_list(viewbox, box_size_list, ITERATIONS,
                          BOXES_PER_ITERATION)
     for box in boxes:
-        temp_svg_list.append(draw.box(box[:2], box[2], stroke_colour,
-                             stroke_width, fill_colour))
+        temp_svg_list.append(draw.box(box[:2], box[2], styles))
     return temp_svg_list
 
 
 svg_list = []
 svg_list.append(svg.svg_header(paper_size, drawable_area))
 # svg_list.append(svg.set_background(drawable_area, BACKGROUND_COLOUR))
-for item in create_svg_list(drawable_area, STROKE_COLOUR,
-                            STROKE_WIDTH, FILL_COLOUR):
+for item in create_svg_list(drawable_area, STYLES, box_size_list):
     svg_list.append(item)
 svg_list.append(svg.svg_footer())
 
